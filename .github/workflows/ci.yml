@@ -14,6 +14,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Checkout MonadicSharp
+        uses: actions/checkout@v4
+        with:
+          repository: Danny4897/MonadicSharp
+          path: ../MonadicSharp
+
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
