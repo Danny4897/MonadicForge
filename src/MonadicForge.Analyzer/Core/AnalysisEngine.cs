@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonadicSharp;
 
@@ -21,8 +22,10 @@ public sealed class AnalysisEngine
         return Try.Execute(() =>
         {
             var tree = CSharpSyntaxTree.ParseText(source);
+            var semanticModel = TryBuildSemanticModel(tree);
+
             var findings = _rules
-                .SelectMany(rule => rule.Analyze(tree, filePath))
+                .SelectMany(rule => rule.Analyze(tree, filePath, semanticModel))
                 .OrderBy(f => f.Line)
                 .ThenBy(f => f.RuleId)
                 .ToList();
@@ -49,4 +52,33 @@ public sealed class AnalysisEngine
                 .ThenBy(f => f.Line)
                 .ToList();
         });
+
+    /// <summary>
+    /// Builds a SemanticModel by creating a CSharpCompilation that includes
+    /// all assemblies loaded in the current AppDomain (which includes MonadicSharp
+    /// since MonadicForge.Analyzer references it). Returns null on failure so
+    /// rules can fall back to syntactic analysis gracefully.
+    /// </summary>
+    private static SemanticModel? TryBuildSemanticModel(SyntaxTree tree)
+    {
+        return Try.Execute(() =>
+        {
+            var references = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
+                .Select(a => MetadataReference.CreateFromFile(a.Location))
+                .Cast<MetadataReference>()
+                .ToList();
+
+            var compilation = CSharpCompilation.Create(
+                assemblyName: "MonadicForgeAnalysis",
+                syntaxTrees: [tree],
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                    nullableContextOptions: NullableContextOptions.Enable));
+
+            return compilation.GetSemanticModel(tree);
+        })
+        .GetValueOrDefault((SemanticModel?)null);
+    }
 }

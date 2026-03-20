@@ -5,7 +5,16 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC009 — IAgent chiamato su servizi esterni senza CircuitBreaker</summary>
+/// <summary>
+/// GC009 — IAgent chiamato su servizi esterni senza CircuitBreaker
+///
+/// Structural class-level analysis: scans field/constructor parameter types for
+/// known external service type names. SemanticModel could help resolve the full
+/// interface hierarchy (e.g., confirming IHttpResultClient is from MonadicSharp.Http),
+/// but the type name list is specific enough for low false-positive rates. A future
+/// improvement: use SemanticModel to check if the field implements IAgent&lt;,&gt; and
+/// is injected from outside the assembly boundary.
+/// </summary>
 public sealed class GC009_MissingCircuitBreaker : IAnalyzerRule
 {
     public string RuleId => "GC009";
@@ -20,7 +29,7 @@ public sealed class GC009_MissingCircuitBreaker : IAnalyzerRule
         "ApiAgent", "WebhookAgent", "SmtpAgent", "StorageAgent"
     ];
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);

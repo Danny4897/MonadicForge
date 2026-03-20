@@ -5,14 +5,23 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC010 — .Sequence() su IEnumerable senza Partition() per batch processing</summary>
+/// <summary>
+/// GC010 — .Sequence() su IEnumerable senza Partition() per batch processing
+///
+/// Heuristic analysis: detects Sequence() calls on variables whose names suggest
+/// a collection (contains "List", "All", "Batch", "Results", etc.). SemanticModel
+/// could improve this rule significantly — it could check the actual generic type
+/// parameter count of the IEnumerable to infer size, or look at whether the
+/// collection is populated by a database query. This is a planned enhancement.
+/// Current false-negative rate: Sequence() on unnamed collections is not detected.
+/// </summary>
 public sealed class GC010_SequenceOnLargeCollection : IAnalyzerRule
 {
     public string RuleId => "GC010";
     public string Description => "Use Partition() for batch processing — Sequence fails on first error.";
     public FindingSeverity Severity => FindingSeverity.Info;
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);

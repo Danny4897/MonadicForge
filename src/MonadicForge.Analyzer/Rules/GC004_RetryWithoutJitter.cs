@@ -5,14 +5,22 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC004 — .WithRetry() / ThenWithRetry senza useJitter:true</summary>
+/// <summary>
+/// GC004 — .WithRetry() / ThenWithRetry senza useJitter:true
+///
+/// Syntactic analysis is sufficient: the rule checks for the presence of
+/// "useJitter: true" as a named argument. This is a structural property of the
+/// call site — no type information is needed. SemanticModel would only help to
+/// verify the method is from MonadicSharp, but "WithRetry"/"ThenWithRetry" are
+/// distinctive enough names to have very low false-positive rates.
+/// </summary>
 public sealed class GC004_RetryWithoutJitter : IAnalyzerRule
 {
     public string RuleId => "GC004";
     public string Description => "Always use useJitter: true to prevent thundering herd.";
     public FindingSeverity Severity => FindingSeverity.Warning;
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);

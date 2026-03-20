@@ -5,14 +5,22 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC008 — AgentCapability.All usato in produzione</summary>
+/// <summary>
+/// GC008 — AgentCapability.All usato in produzione
+///
+/// Syntactic analysis is fully sufficient here: the rule detects the exact
+/// member access expression "AgentCapability.All". This is an enum value with
+/// a unique name — there is no realistic false positive scenario. SemanticModel
+/// would not add value beyond confirming it's from MonadicSharp.Agents.Core,
+/// which is an unnecessary overhead for a deterministic syntactic pattern.
+/// </summary>
 public sealed class GC008_OverGrantedCapability : IAnalyzerRule
 {
     public string RuleId => "GC008";
     public string Description => "Grant minimum required capabilities only.";
     public FindingSeverity Severity => FindingSeverity.Warning;
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);

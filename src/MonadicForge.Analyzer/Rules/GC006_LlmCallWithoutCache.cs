@@ -5,7 +5,16 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC006 — Chiamate a LLM/AI senza CachingAgentWrapper</summary>
+/// <summary>
+/// GC006 — Chiamate a LLM/AI senza CachingAgentWrapper
+///
+/// Class-level structural analysis: looks at field and constructor parameter types
+/// within a class. SemanticModel could improve accuracy by resolving the actual
+/// IChatClient interface hierarchy, but the type name heuristics (IChatClient,
+/// ILanguageModel, ChatClient) already have high precision. Adding full interface
+/// resolution is planned for a future release when the MonadicSharp.Agents assembly
+/// is always present in the analysis compilation.
+/// </summary>
 public sealed class GC006_LlmCallWithoutCache : IAnalyzerRule
 {
     public string RuleId => "GC006";
@@ -20,7 +29,7 @@ public sealed class GC006_LlmCallWithoutCache : IAnalyzerRule
         "IAIClient", "ILlmClient", "ChatClient"
     ];
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);

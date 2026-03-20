@@ -5,7 +5,15 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC005 — Validazioni pure dentro lo scope di WithRetry</summary>
+/// <summary>
+/// GC005 — Validazioni pure dentro lo scope di WithRetry
+///
+/// Syntactic analysis is sufficient: the rule looks for validation method names
+/// (Ensure, Where, Guard) nested inside WithRetry lambda arguments. These method
+/// names are distinctive enough in this context. SemanticModel would help confirm
+/// that "Ensure" is specifically Result&lt;T&gt;.Ensure, but the false-positive rate
+/// without it is acceptably low given the naming specificity.
+/// </summary>
 public sealed class GC005_RetryWrapsValidation : IAnalyzerRule
 {
     public string RuleId => "GC005";
@@ -17,7 +25,7 @@ public sealed class GC005_RetryWrapsValidation : IAnalyzerRule
         "Ensure", "Where", "Validate", "Guard", "Check", "Must", "Require"
     ];
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);

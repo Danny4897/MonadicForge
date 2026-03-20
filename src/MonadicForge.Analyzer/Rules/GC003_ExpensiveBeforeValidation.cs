@@ -5,7 +5,15 @@ using MonadicForge.Analyzer.Core;
 
 namespace MonadicForge.Analyzer.Rules;
 
-/// <summary>GC003 — Operazioni async costose (DB/HTTP) prima di validazioni pure nella chain</summary>
+/// <summary>
+/// GC003 — Operazioni async costose (DB/HTTP) prima di validazioni pure nella chain
+///
+/// Syntactic analysis is sufficient here: method names like FindAsync, GetAsync are
+/// strong enough identifiers for expensive I/O. Adding SemanticModel would add
+/// complexity with minimal false-positive reduction since the method name heuristics
+/// already have high precision. Potential future improvement: use SemanticModel to
+/// verify the receiver implements IRepository or IHttpClient.
+/// </summary>
 public sealed class GC003_ExpensiveBeforeValidation : IAnalyzerRule
 {
     public string RuleId => "GC003";
@@ -24,7 +32,7 @@ public sealed class GC003_ExpensiveBeforeValidation : IAnalyzerRule
         "Where", "Ensure", "Validate", "Check", "Guard", "Require", "Must"
     ];
 
-    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath)
+    public IEnumerable<AnalysisFinding> Analyze(SyntaxTree tree, string filePath, SemanticModel? semanticModel = null)
     {
         var root = tree.GetRoot();
         var walker = new Walker(tree, filePath, this);
