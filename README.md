@@ -1,6 +1,6 @@
 # MonadicForge
 
-[![Build](https://github.com/Danny4897/MonadicForge/actions/workflows/build.yml/badge.svg)](https://github.com/Danny4897/MonadicForge/actions)
+[![CI](https://github.com/Danny4897/MonadicForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Danny4897/MonadicForge/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/MonadicForge.svg)](https://www.nuget.org/packages/MonadicForge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
