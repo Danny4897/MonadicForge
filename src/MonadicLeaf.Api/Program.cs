@@ -9,6 +9,10 @@ using MonadicLeaf.Modules.Analyze.Application.Commands;
 using MonadicLeaf.Modules.Analyze.Application.Llm;
 using MonadicLeaf.Modules.Analyze.Contracts;
 using MonadicLeaf.Modules.Analyze.Infrastructure.Persistence;
+using MonadicLeaf.Modules.Auth;
+using MonadicLeaf.Modules.Auth.Application.Commands;
+using MonadicLeaf.Modules.Auth.Application.Services;
+using MonadicLeaf.Modules.Auth.Contracts;
 using MonadicLeaf.Modules.Tenants;
 using MonadicLeaf.Modules.Tenants.Application.Commands;
 using MonadicLeaf.Modules.Tenants.Application.Queries;
@@ -36,16 +40,21 @@ builder.Services.AddScoped<AnthropicClient>(sp =>
 {
     var httpFactory = sp.GetRequiredService<IHttpClientFactory>();
     var config = sp.GetRequiredService<IConfiguration>();
-    var apiKey = config["Anthropic:ApiKey"];
-    return new AnthropicClient(httpFactory.CreateClient("anthropic"), apiKey);
+    return new AnthropicClient(httpFactory.CreateClient("anthropic"), config["Anthropic:ApiKey"]);
 });
 builder.Services.AddScoped<AnalysisRepository>();
 builder.Services.AddScoped<AnalyzeCodeCommand>();
 builder.Services.AddScoped<IAnalyzeService, AnalyzeService>();
 
-// ─── Auth ────────────────────────────────────────────────────────────────────
+// ─── Auth module ─────────────────────────────────────────────────────────────
+builder.Services.AddScoped<JwtIssuer>();
+builder.Services.AddScoped<RegisterCommand>();
+builder.Services.AddScoped<LoginCommand>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// ─── JWT Auth ────────────────────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("Jwt:Key is required in configuration");
+    ?? throw new InvalidOperationException("Jwt:Key is required");
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -62,6 +71,14 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+
+// ─── CORS ────────────────────────────────────────────────────────────────────
+var frontendUrl = builder.Configuration["Frontend:Url"] ?? "http://localhost:5173";
+builder.Services.AddCors(opt =>
+    opt.AddDefaultPolicy(policy =>
+        policy.WithOrigins(frontendUrl)
+              .AllowAnyHeader()
+              .AllowAnyMethod()));
 
 // ─── API ─────────────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
@@ -84,17 +101,20 @@ builder.Services.AddSwaggerGen(c =>
 // ─── App ─────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// Auto-create schema — use proper EF migrations in production
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
-    // Auto-create schema in dev — use proper EF migrations in production
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
     await db.Database.EnsureCreatedAsync();
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors();
 app.UseAuthentication();
 app.UseMiddleware<TenantMiddleware>();
 app.UseMiddleware<PlanEnforcementMiddleware>();

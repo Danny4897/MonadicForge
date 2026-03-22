@@ -1,8 +1,23 @@
 <Project>
   <PropertyGroup>
+    <!-- ── MonadicSharp core ──────────────────────────────────────────────── -->
     <!-- Local dev: MonadicSharp is a sibling of MonadicLeaf in the workspace -->
     <MonadicSharpProjectPath Condition="Exists('$(MSBuildThisFileDirectory)..\MonadicSharp\MonadicSharp.csproj')">$(MSBuildThisFileDirectory)..\MonadicSharp\MonadicSharp.csproj</MonadicSharpProjectPath>
     <!-- CI: MonadicSharp checked out as a subdirectory inside the repo root -->
     <MonadicSharpProjectPath Condition="'$(MonadicSharpProjectPath)' == '' and Exists('$(MSBuildThisFileDirectory)MonadicSharp\MonadicSharp.csproj')">$(MSBuildThisFileDirectory)MonadicSharp\MonadicSharp.csproj</MonadicSharpProjectPath>
+
+    <!-- ── MonadicSharp.AI ────────────────────────────────────────────────── -->
+    <!-- Local dev: inside source/repos MonadicSharp -->
+    <MonadicSharpAiProjectPath Condition="Exists('$(MSBuildThisFileDirectory)..\..\source\repos\MonadicSharp\MonadicSharp\src\MonadicSharp.AI\MonadicSharp.AI.csproj')">$(MSBuildThisFileDirectory)..\..\source\repos\MonadicSharp\MonadicSharp\src\MonadicSharp.AI\MonadicSharp.AI.csproj</MonadicSharpAiProjectPath>
+    <!-- CI -->
+    <MonadicSharpAiProjectPath Condition="'$(MonadicSharpAiProjectPath)' == '' and Exists('$(MSBuildThisFileDirectory)MonadicSharp\src\MonadicSharp.AI\MonadicSharp.AI.csproj')">$(MSBuildThisFileDirectory)MonadicSharp\src\MonadicSharp.AI\MonadicSharp.AI.csproj</MonadicSharpAiProjectPath>
+
+    <!-- ── MonadicSharp.Agents (MonadicSharp.Framework repo) ─────────────── -->
+    <MonadicSharpAgentsProjectPath Condition="Exists('$(MSBuildThisFileDirectory)..\MonadicSharp.Framework\src\MonadicSharp.Agents\MonadicSharp.Agents.csproj')">$(MSBuildThisFileDirectory)..\MonadicSharp.Framework\src\MonadicSharp.Agents\MonadicSharp.Agents.csproj</MonadicSharpAgentsProjectPath>
+    <MonadicSharpAgentsProjectPath Condition="'$(MonadicSharpAgentsProjectPath)' == '' and Exists('$(MSBuildThisFileDirectory)MonadicSharp.Framework\src\MonadicSharp.Agents\MonadicSharp.Agents.csproj')">$(MSBuildThisFileDirectory)MonadicSharp.Framework\src\MonadicSharp.Agents\MonadicSharp.Agents.csproj</MonadicSharpAgentsProjectPath>
+
+    <!-- ── MonadicSharp.Caching (MonadicSharp.Framework repo) ────────────── -->
+    <MonadicSharpCachingProjectPath Condition="Exists('$(MSBuildThisFileDirectory)..\MonadicSharp.Framework\src\MonadicSharp.Caching\MonadicSharp.Caching.csproj')">$(MSBuildThisFileDirectory)..\MonadicSharp.Framework\src\MonadicSharp.Caching\MonadicSharp.Caching.csproj</MonadicSharpCachingProjectPath>
+    <MonadicSharpCachingProjectPath Condition="'$(MonadicSharpCachingProjectPath)' == '' and Exists('$(MSBuildThisFileDirectory)MonadicSharp.Framework\src\MonadicSharp.Caching\MonadicSharp.Caching.csproj')">$(MSBuildThisFileDirectory)MonadicSharp.Framework\src\MonadicSharp.Caching\MonadicSharp.Caching.csproj</MonadicSharpCachingProjectPath>
   </PropertyGroup>
 </Project>

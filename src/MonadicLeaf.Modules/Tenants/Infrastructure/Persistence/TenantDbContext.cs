@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MonadicLeaf.Modules.Analyze.Domain.Entities;
+using MonadicLeaf.Modules.Auth.Domain.Entities;
 using MonadicLeaf.Modules.Tenants.Domain.Entities;
 
 namespace MonadicLeaf.Modules.Tenants.Infrastructure.Persistence;
@@ -14,6 +15,7 @@ public sealed class TenantDbContext : DbContext
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<AnalysisRecord> AnalysisRecords => Set<AnalysisRecord>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +37,16 @@ public sealed class TenantDbContext : DbContext
             entity.Property(r => r.UserId).HasMaxLength(256).IsRequired();
             entity.Property(r => r.FileName).HasMaxLength(512);
             entity.HasIndex(r => new { r.TenantId, r.CreatedAt });
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Email).HasMaxLength(256).IsRequired();
+            entity.Property(u => u.TenantId).HasMaxLength(128).IsRequired();
+            entity.Property(u => u.Plan).HasConversion<string>().HasMaxLength(32);
+            entity.HasIndex(u => u.Email).IsUnique();
+            entity.HasIndex(u => u.TenantId);
         });
     }
 }
