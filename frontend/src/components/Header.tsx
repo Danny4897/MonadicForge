@@ -1,18 +1,21 @@
+import { useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Header() {
-  const { token, email, plan, analysesUsedThisMonth, analysesPerMonth } = useAuth()
-  const { logout } = useAuth()
+  const { token, email, plan, analysesUsedThisMonth, analysesPerMonth, logout } = useAuth()
   const navigate = useNavigate()
 
   const remaining = analysesPerMonth === -1 ? null : analysesPerMonth - analysesUsedThisMonth
-  const nearLimit = remaining !== null && remaining <= 5
+  // Warn at ≤10% remaining (ui-ux-saas rule)
+  const nearLimit = remaining !== null && analysesPerMonth > 0 && remaining <= Math.ceil(analysesPerMonth * 0.1)
+
+  const handleGoPro = useCallback(() => navigate('/billing'), [navigate])
 
   return (
     <header className="flex-shrink-0 h-14 flex items-center justify-between px-4 border-b border-gray-100 bg-white">
       {/* Logo */}
-      <Link to="/" className="flex items-center gap-2 font-bold text-leaf-600 text-lg">
+      <Link to="/" className="flex items-center gap-2 font-bold text-leaf-600 text-lg focus:outline-none focus:ring-2 focus:ring-leaf-500 rounded">
         🌿 <span>MonadicLeaf</span>
         <span className="text-xs font-normal text-gray-400 hidden sm:inline">Green C# AI</span>
       </Link>
@@ -42,15 +45,15 @@ export default function Header() {
             <span className="text-xs text-gray-500 hidden sm:inline">{email}</span>
             {plan === 'Free' && (
               <button
-                onClick={() => navigate('/billing')}
-                className="text-xs px-3 py-1.5 rounded-lg bg-leaf-500 hover:bg-leaf-600 text-white font-semibold transition-colors"
+                onClick={handleGoPro}
+                className="text-xs px-3 py-1.5 rounded-lg bg-leaf-500 hover:bg-leaf-600 text-white font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500"
               >
                 Go Pro €19
               </button>
             )}
             <button
               onClick={logout}
-              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500"
             >
               Sign out
             </button>
@@ -59,13 +62,13 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <Link
               to="/login"
-              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500"
             >
               Sign in
             </Link>
             <Link
               to="/register"
-              className="text-xs px-3 py-1.5 rounded-lg bg-leaf-500 hover:bg-leaf-600 text-white font-semibold transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg bg-leaf-500 hover:bg-leaf-600 text-white font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500"
             >
               Go Pro €19
             </Link>

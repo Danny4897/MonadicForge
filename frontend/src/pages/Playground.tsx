@@ -1,11 +1,25 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import Editor, { type OnMount } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import ResultsPanel from '../components/ResultsPanel'
 import UpgradeModal from '../components/UpgradeModal'
-import type { AnalyzeResult, ApiError } from '../types/api'
+import type { AnalyzeResult } from '../types/api'
+
+function extractMessage(err: unknown, fallback: string): string {
+  if (err && typeof err === 'object' && 'code' in err && err.code === 'LEAF_PLAN_LIMIT_EXCEEDED') {
+    return ''
+  }
+  if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
+    return err.message
+  }
+  return fallback
+}
+
+function isLimitError(err: unknown): boolean {
+  return !!(err && typeof err === 'object' && 'code' in err && err.code === 'LEAF_PLAN_LIMIT_EXCEEDED')
+}
 
 const PLACEHOLDER = `// Paste your C# code here and press Ctrl+Enter to analyze
 using System;
@@ -35,16 +49,7 @@ export default function Playground() {
   const [showUpgrade, setShowUpgrade] = useState(false)
   const { token, refreshUsage } = useAuth()
 
-  const handleMount: OnMount = useCallback((editor) => {
-    editorRef.current = editor
-    editor.addCommand(
-      // Ctrl+Enter = KeyMod.CtrlCmd | KeyCode.Enter = 2048 | 3 = 2051
-      2051,
-      () => runAnalysis(),
-    )
-    editor.focus()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const handleCloseUpgrade = useCallback(() => setShowUpgrade(false), [])
 
   const runAnalysis = useCallback(async () => {
     const code = editorRef.current?.getValue() ?? ''
@@ -55,25 +60,38 @@ export default function Playground() {
     try {
       const res = await api.analyze.run(code, 'Playground.cs')
       setResult(res)
-      refreshUsage(res.findings.length) // approximate; backend is source of truth
+      refreshUsage(res.findings.length)
     } catch (err) {
-      const apiErr = err as ApiError
-      if (apiErr.code === 'LEAF_PLAN_LIMIT_EXCEEDED') {
+      if (isLimitError(err)) {
         setShowUpgrade(true)
       } else {
-        setError(apiErr.message ?? 'Analysis failed')
+        setError(extractMessage(err, 'Analysis failed. Please try again.'))
       }
     } finally {
       setLoading(false)
     }
   }, [refreshUsage])
 
-  const navigateToLine = useCallback((line: number, column: number) => {
+  const handleMount: OnMount = useCallback((ed) => {
+    editorRef.current = ed
+    ed.focus()
+  }, [])
+
+  // Wire Ctrl+Enter after mount so runAnalysis is never stale
+  useEffect(() => {
     const editor = editorRef.current
     if (!editor) return
-    editor.revealLineInCenter(line)
-    editor.setPosition({ lineNumber: line, column })
-    editor.focus()
+    // Ctrl+Enter = KeyMod.CtrlCmd (2048) | KeyCode.Enter (3) = 2051
+    editor.addCommand(2051, () => runAnalysis())
+
+  }, [runAnalysis])
+
+  const navigateToLine = useCallback((line: number, column: number) => {
+    const ed = editorRef.current
+    if (!ed) return
+    ed.revealLineInCenter(line)
+    ed.setPosition({ lineNumber: line, column })
+    ed.focus()
   }, [])
 
   return (
@@ -86,11 +104,12 @@ export default function Playground() {
           <button
             onClick={runAnalysis}
             disabled={loading}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-leaf-500 hover:bg-leaf-600 disabled:opacity-50 text-white font-semibold transition-colors"
+            aria-disabled={loading}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-leaf-500 hover:bg-leaf-600 disabled:opacity-50 text-white font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500"
           >
             {loading ? (
               <>
-                <span className="h-3 w-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                <span className="h-3 w-3 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true" />
                 Analyzing…
               </>
             ) : (
@@ -100,7 +119,7 @@ export default function Playground() {
         </div>
 
         {error && (
-          <div className="flex-shrink-0 px-4 py-2 bg-red-50 border-b border-red-100 text-xs text-red-600">
+          <div className="flex-shrink-0 px-4 py-2 bg-red-50 border-b border-red-100 text-xs text-red-600" role="alert">
             {error}
           </div>
         )}
@@ -135,7 +154,7 @@ export default function Playground() {
         <ResultsPanel result={result} loading={loading} onNavigate={navigateToLine} />
       </div>
 
-      {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+      {showUpgrade && <UpgradeModal onClose={handleCloseUpgrade} />}
     </div>
   )
 }
