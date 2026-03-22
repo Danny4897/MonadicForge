@@ -4,7 +4,7 @@ namespace MonadicLeaf.Modules.Auth.Domain.Entities;
 
 public sealed class User
 {
-    public Guid Id { get; private set; }
+    public string Id { get; private set; } = default!;
     public string Email { get; private set; } = default!;
     public string PasswordHash { get; private set; } = default!;
     public string TenantId { get; private set; } = default!;
@@ -17,7 +17,7 @@ public sealed class User
         string email, string passwordHash, string tenantId, PlanTier plan = PlanTier.Free) =>
         new()
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid().ToString(),
             Email = email.ToLowerInvariant().Trim(),
             PasswordHash = passwordHash,
             TenantId = tenantId,

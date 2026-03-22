@@ -34,74 +34,117 @@ export default function RegisterPage() {
   }, [email, password, login, navigate])
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-2" aria-hidden="true">🌿</div>
-          <h1 className="text-xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-sm text-gray-500 mt-1">Free — 50 analyses/month</p>
+    <div className="flex flex-1 overflow-hidden">
+      {/* ── Left brand panel ── */}
+      <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 bg-gradient-to-br from-leaf-600 via-leaf-500 to-leaf-400 p-10 text-white">
+        <div>
+          <div className="flex items-center gap-2.5 mb-12">
+            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-xl backdrop-blur-sm">🌿</div>
+            <span className="font-bold text-lg">MonadicLeaf</span>
+          </div>
+          <h2 className="text-3xl font-bold leading-tight mb-4">
+            Start writing green C# today.
+          </h2>
+          <p className="text-leaf-100 text-sm leading-relaxed">
+            Free forever for up to 50 analyses per month. No credit card required.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              disabled={loading}
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500 disabled:opacity-50"
-              placeholder="you@example.com"
-              autoComplete="email"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              disabled={loading}
-              minLength={8}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500 disabled:opacity-50"
-              placeholder="At least 8 characters"
-              autoComplete="new-password"
-            />
+        <div className="space-y-3">
+          {[
+            { icon: '🔍', text: '50 analyses/month free' },
+            { icon: '⚡', text: 'Instant Roslyn-powered feedback' },
+            { icon: '🤖', text: 'AI fix suggestions with Claude' },
+            { icon: '📊', text: 'Green Score for every file' },
+          ].map(({ icon, text }) => (
+            <div key={text} className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3 backdrop-blur-sm">
+              <span className="text-lg">{icon}</span>
+              <span className="text-sm text-leaf-50">{text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Right form panel ── */}
+      <div className="flex flex-1 items-center justify-center bg-gray-50 px-4">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">
+            <div className="w-8 h-8 rounded-lg bg-leaf-500 flex items-center justify-center text-white">🌿</div>
+            <span className="font-bold text-gray-900">MonadicLeaf</span>
           </div>
 
-          {error && (
-            <p className="text-sm text-red-600" role="alert">{error}</p>
-          )}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="mb-6">
+              <h1 className="text-xl font-bold text-gray-900">Create your account</h1>
+              <p className="text-sm text-gray-500 mt-1">Free — 50 analyses/month, no card needed</p>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            aria-disabled={loading}
-            className="w-full rounded-xl bg-leaf-500 hover:bg-leaf-600 disabled:opacity-50 text-white font-semibold text-sm py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                Creating account…
-              </span>
-            ) : 'Create free account'}
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="email">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  disabled={loading}
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500 focus:border-transparent disabled:opacity-50 transition-shadow"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  disabled={loading}
+                  minLength={8}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500 focus:border-transparent disabled:opacity-50 transition-shadow"
+                  placeholder="At least 8 characters"
+                  autoComplete="new-password"
+                />
+              </div>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Already have an account?{' '}
-          <Link to="/login" className="text-leaf-600 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-leaf-500 rounded">
-            Sign in
-          </Link>
-        </p>
+              {error && (
+                <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5" role="alert">
+                  <span className="mt-0.5">⚠</span>
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                aria-disabled={loading}
+                className="w-full rounded-xl bg-leaf-500 hover:bg-leaf-600 disabled:opacity-50 text-white font-semibold text-sm py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-leaf-500 shadow-sm mt-2"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Creating account…
+                  </span>
+                ) : 'Create free account'}
+              </button>
+            </form>
+
+            <p className="mt-5 text-center text-sm text-gray-500">
+              Already have an account?{' '}
+              <Link to="/login" className="text-leaf-600 font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-leaf-500 rounded">
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )
