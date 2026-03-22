@@ -4,6 +4,9 @@
     <Project Path="src/MonadicLeaf.Cli/MonadicLeaf.Cli.csproj" />
     <Project Path="src/MonadicLeaf.Migrator/MonadicLeaf.Migrator.csproj" />
     <Project Path="src/MonadicLeaf.Report/MonadicLeaf.Report.csproj" />
+    <Project Path="src/MonadicLeaf.SharedKernel/MonadicLeaf.SharedKernel.csproj" />
+    <Project Path="src/MonadicLeaf.Modules/MonadicLeaf.Modules.csproj" />
+    <Project Path="src/MonadicLeaf.Api/MonadicLeaf.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MonadicLeaf.Analyzer.Tests/MonadicLeaf.Analyzer.Tests.csproj" />
