@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <!-- Local dev: MonadicSharp is a sibling of MonadicForge in the workspace -->
+    <!-- Local dev: MonadicSharp is a sibling of MonadicLeaf in the workspace -->
     <MonadicSharpProjectPath Condition="Exists('$(MSBuildThisFileDirectory)..\MonadicSharp\MonadicSharp.csproj')">$(MSBuildThisFileDirectory)..\MonadicSharp\MonadicSharp.csproj</MonadicSharpProjectPath>
     <!-- CI: MonadicSharp checked out as a subdirectory inside the repo root -->
     <MonadicSharpProjectPath Condition="'$(MonadicSharpProjectPath)' == '' and Exists('$(MSBuildThisFileDirectory)MonadicSharp\MonadicSharp.csproj')">$(MSBuildThisFileDirectory)MonadicSharp\MonadicSharp.csproj</MonadicSharpProjectPath>

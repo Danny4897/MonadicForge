@@ -34,11 +34,11 @@ jobs:
         run: dotnet test --configuration Release
 
       - name: Pack
-        run: dotnet pack src/MonadicForge.Cli/MonadicForge.Cli.csproj --configuration Release --output ./artifacts
+        run: dotnet pack src/MonadicLeaf.Cli/MonadicLeaf.Cli.csproj --configuration Release --output ./artifacts
 
       - name: Push to NuGet
         run: |
-          dotnet nuget push ./artifacts/MonadicForge.*.nupkg \
+          dotnet nuget push ./artifacts/MonadicLeaf.*.nupkg \
             --api-key ${{ secrets.NUGET_API_KEY }} \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate

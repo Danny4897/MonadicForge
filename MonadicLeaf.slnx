@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MonadicLeaf.Analyzer/MonadicLeaf.Analyzer.csproj" />
+    <Project Path="src/MonadicLeaf.Cli/MonadicLeaf.Cli.csproj" />
+    <Project Path="src/MonadicLeaf.Migrator/MonadicLeaf.Migrator.csproj" />
+    <Project Path="src/MonadicLeaf.Report/MonadicLeaf.Report.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MonadicLeaf.Analyzer.Tests/MonadicLeaf.Analyzer.Tests.csproj" />
+    <Project Path="tests/MonadicLeaf.Migrator.Tests/MonadicLeaf.Migrator.Tests.csproj" />
+  </Folder>
+</Solution>

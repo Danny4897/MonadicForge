@@ -1,17 +1,17 @@
-# MonadicForge
+# MonadicLeaf
 
-[![CI](https://github.com/Danny4897/MonadicForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Danny4897/MonadicForge/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/v/MonadicForge.svg)](https://www.nuget.org/packages/MonadicForge)
+[![CI](https://github.com/Danny4897/MonadicLeaf/actions/workflows/ci.yml/badge.svg)](https://github.com/Danny4897/MonadicLeaf/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/MonadicLeaf.svg)](https://www.nuget.org/packages/MonadicLeaf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **The structural guarantee that AI-generated C# code doesn't break in production.**
 
-MonadicForge is a CLI tool that statically analyzes and auto-migrates C# code to ensure it follows [MonadicSharp](https://github.com/Danny4897/MonadicSharp) green-code principles: Railway-Oriented Programming, safe error handling, and zero wasted compute.
+MonadicLeaf is a CLI tool that statically analyzes and auto-migrates C# code to ensure it follows [MonadicSharp](https://github.com/Danny4897/MonadicSharp) green-code principles: Railway-Oriented Programming, safe error handling, and zero wasted compute.
 
 ## Quick Start
 
 ```bash
-dotnet tool install -g MonadicForge
+dotnet tool install -g MonadicLeaf
 
 dotnet forge analyze --path ./src
 dotnet forge migrate --path ./src
@@ -110,7 +110,7 @@ All migrations are **idempotent** — applying twice produces the same result.
 
 ## Why MonadicSharp
 
-MonadicForge is built on top of [MonadicSharp](https://github.com/Danny4897/MonadicSharp) — a production-grade functional library for .NET featuring:
+MonadicLeaf is built on top of [MonadicSharp](https://github.com/Danny4897/MonadicSharp) — a production-grade functional library for .NET featuring:
 
 - `Result<T>` — Railway-Oriented Programming with typed errors
 - `Option<T>` — Null-safe optionals
@@ -125,15 +125,15 @@ dotnet add package MonadicSharp
 ## Architecture
 
 ```
-MonadicForge/
+MonadicLeaf/
 ├── src/
-│   ├── MonadicForge.Cli/          # System.CommandLine + Spectre.Console
-│   ├── MonadicForge.Analyzer/     # 10 Roslyn SyntaxWalker rules
-│   ├── MonadicForge.Migrator/     # 4 Roslyn SyntaxRewriter migrations
-│   └── MonadicForge.Report/       # HTML report + Green Score
+│   ├── MonadicLeaf.Cli/          # System.CommandLine + Spectre.Console
+│   ├── MonadicLeaf.Analyzer/     # 10 Roslyn SyntaxWalker rules
+│   ├── MonadicLeaf.Migrator/     # 4 Roslyn SyntaxRewriter migrations
+│   └── MonadicLeaf.Report/       # HTML report + Green Score
 └── tests/
-    ├── MonadicForge.Analyzer.Tests/
-    └── MonadicForge.Migrator.Tests/
+    ├── MonadicLeaf.Analyzer.Tests/
+    └── MonadicLeaf.Migrator.Tests/
 ```
 
 ## License
