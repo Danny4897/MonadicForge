@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../MonadicLeaf.SharedKernel/MonadicLeaf.SharedKernel.csproj" />
+    <ProjectReference Include="../MonadicLeaf.Analyzer/MonadicLeaf.Analyzer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

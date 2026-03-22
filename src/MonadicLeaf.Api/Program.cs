@@ -2,7 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MonadicLeaf.Analyzer.Core;
 using MonadicLeaf.Api.Middleware;
+using MonadicLeaf.Modules.Analyze;
+using MonadicLeaf.Modules.Analyze.Application.Commands;
+using MonadicLeaf.Modules.Analyze.Application.Llm;
+using MonadicLeaf.Modules.Analyze.Contracts;
+using MonadicLeaf.Modules.Analyze.Infrastructure.Persistence;
 using MonadicLeaf.Modules.Tenants;
 using MonadicLeaf.Modules.Tenants.Application.Commands;
 using MonadicLeaf.Modules.Tenants.Application.Queries;
@@ -22,6 +28,20 @@ builder.Services.AddScoped<CreateTenantCommand>();
 builder.Services.AddScoped<UpdateTenantPlanCommand>();
 builder.Services.AddScoped<IncrementUsageCommand>();
 builder.Services.AddScoped<ITenantsService, TenantsService>();
+
+// ─── Analyze module ──────────────────────────────────────────────────────────
+builder.Services.AddSingleton<AnalysisEngine>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<AnthropicClient>(sp =>
+{
+    var httpFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var config = sp.GetRequiredService<IConfiguration>();
+    var apiKey = config["Anthropic:ApiKey"];
+    return new AnthropicClient(httpFactory.CreateClient("anthropic"), apiKey);
+});
+builder.Services.AddScoped<AnalysisRepository>();
+builder.Services.AddScoped<AnalyzeCodeCommand>();
+builder.Services.AddScoped<IAnalyzeService, AnalyzeService>();
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -68,14 +88,16 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    // Auto-create schema in dev — use proper EF migrations in production
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
+    await db.Database.EnsureCreatedAsync();
 }
 
 app.UseAuthentication();
-
-// Middleware order matters: TenantMiddleware → PlanEnforcementMiddleware → Controllers
 app.UseMiddleware<TenantMiddleware>();
 app.UseMiddleware<PlanEnforcementMiddleware>();
-
 app.UseAuthorization();
 app.MapControllers();
 
