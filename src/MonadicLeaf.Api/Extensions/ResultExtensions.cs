@@ -17,10 +17,16 @@ public static class ResultExtensions
             "LEAF_TENANT_NOT_FOUND" or "NOT_FOUND" =>
                 new NotFoundObjectResult(error),
 
+            "LEAF_AUTH_INVALID" =>
+                new UnauthorizedObjectResult(error),
+
+            "CONFLICT" =>
+                new ConflictObjectResult(error),
+
             "LEAF_PLAN_LIMIT_EXCEEDED" or "LEAF_UNAUTHORIZED_FEATURE" or "LEAF_INVALID_STRIPE_SIGNATURE" =>
                 new ObjectResult(error) { StatusCode = StatusCodes.Status403Forbidden },
 
-            "LEAF_CODE_TOO_LARGE" or "VALIDATION_ERROR" =>
+            "LEAF_CODE_TOO_LARGE" or "VALIDATION_ERROR" or "LEAF_ANALYSIS_FAILED" =>
                 new BadRequestObjectResult(error),
 
             _ => new ObjectResult(error) { StatusCode = StatusCodes.Status500InternalServerError }
