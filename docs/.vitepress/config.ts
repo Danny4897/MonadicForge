@@ -5,6 +5,7 @@ export default defineConfig({
   description: 'The structural guarantee that AI-generated C# code does not break in production — static analysis, auto-migration, and Green Score.',
   base: '/MonadicLeaf/',
   cleanUrls: true,
+  ignoreDeadLinks: true,
 
   head: [
     ['meta', { property: 'og:type', content: 'website' }],
