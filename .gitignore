@@ -6,3 +6,5 @@ obj/
 *.nupkg
 *.snupkg
 forge-report.html
+docs/node_modules/
+docs/.vitepress/dist/
