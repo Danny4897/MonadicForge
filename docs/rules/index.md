@@ -6,12 +6,12 @@ MonadicLeaf enforces 10 green-code rules, grouped by severity.
 
 | Rule | Name | Description |
 |------|------|-------------|
-| [GC001](./gc001) | No bare throw | Public methods must not throw — return `Result<T>` instead |
-| [GC002](./gc002) | No nullable return | Failable methods must return `Option<T>` instead of `T?` |
-| [GC003](./gc003) | No unhandled Result | Every `Result<T>` must be matched, bound, or explicitly discarded |
-| [GC004](./gc004) | No bool for failable | Methods that can fail must not return `bool` — use `Result<T>` |
-| [GC005](./gc005) | No out parameters | Use `Option<T>` instead of `TryGet`-style out params |
-| [GC006](./gc006) | No swallowed catch | Empty catch blocks are forbidden |
+| [GC001](/rules/gc001) | No bare throw | Public methods must not throw — return `Result<T>` instead |
+| [GC002](/rules/gc002) | No nullable return | Failable methods must return `Option<T>` instead of `T?` |
+| [GC003](/rules/gc003) | No unhandled Result | Every `Result<T>` must be matched, bound, or explicitly discarded |
+| [GC004](/rules/gc004) | No bool for failable | Methods that can fail must not return `bool` — use `Result<T>` |
+| [GC005](/rules/gc005) | No out parameters | Use `Option<T>` instead of `TryGet`-style out params |
+| [GC006](/rules/gc006) | No swallowed catch | Empty catch blocks are forbidden |
 
 ## Warning rules
 
